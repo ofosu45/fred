@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Illegal Mining Map - Global</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <style>
+        #map { height: 600px; }
+        #user-location { margin-top: 10px; }
+    </style>
+
+<!--  Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+<link rel="icon" href="data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' width='1' height='1'></svg>" />
+
+<link href="edit/Bootstrap/animate.css/animate.min.css" rel="stylesheet">
+<link href="edit/Bootstrap/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="edit/Bootstrap/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+<link href="edit/Bootstrap/boxicons/css/boxicons.min.css" rel="stylesheet">
+<link href="edit/Bootstrap/glightbox/css/glightbox.min.css" rel="stylesheet">
+<link href="edit/Bootstrap/remixicon/remixicon.css" rel="stylesheet">
+<link href="edit/Bootstrap/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+<!--   CSS File -->
+<link href="edit/css/style.css" rel="stylesheet">
+
+
+</head>
+
+
+ 
+  
+<body>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="fixed-top d-flex align-items-center">
+      <div class="container d-flex align-items-center">
+  
+        <h1 class="logo me-auto"><a href="index.html"> Illegal Mining </a></h1>
+        
+  
+        <nav id="navbar" class="navbar">
+          <ul>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="geographical.html">Geographical</a>
+            <li class="dropdown"><a href="#"><span>About</span> <i class="bi bi-chevron-down"></i></a>
+              <ul>
+                <li><a href="about.html">About</a></li>
+                <li><a href="Surveillance.html">Surveillance</a></li>
+                <li><a href="Statistics.html">Statistics</a></li> 
+                <li><a href="Policies.html">Policies</a></li>
+                
+              </ul>
+  
+              <li class="dropdown"><a href="#"><span>More</span> <i class="bi bi-chevron-down"></i></a>
+                <ul>
+                  <li><a href="News.html">News</a></li>
+                  <li><a href="Location.html">Location</a></li>
+                  <li><a href="resources.html">Resources</a></li> 
+                  <li><a href="Case.html">Case study</a></li>
+                  
+  
+                </ul>
+              <li>
+          </ul>
+            <i class="bi bi-list mobile-nav-toggle"></i>
+          </nav><!-- .navbar -->
+            
+        </nav><!-- .navbar -->
+  
+      </div>
+    </header><!--  Header End -->
+  
+    <main id="main">
+  
+      <!-- ======= Breadcrumbs ======= -->
+      <section id="breadcrumbs" class="breadcrumbs">
+        <div class="container">
+  
+          <div class="d-flex justify-content-between align-items-center">
+            <h2>Geographical</h2>
+            <ol>
+              <li><a href="index.html">Home</a></li>
+              <li>Geographical</li>
+            </ol>
+          </div>
+  
+        </div>
+      </section><!-- End Breadcrumbs -->
+
+    <h1>Global Illegal Mining Map</h1>
+    <p>Use this map to view illegal mining activities and the communities affected around the world.</p>
+
+    <div id="map"></div>
+
+    <div id="user-location">
+        <button onclick="getLocation()">Find My Location</button>
+        <p id="location-info"></p>
+    </div>
+
+    <script>
+        // Initialize the map, centered on the world (0,0)
+        var map = L.map('map').setView([0, 0], 2);  // Centered at (0, 0) with zoom level 2
+
+        // Set up the tile layer (background map)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Example data for illegal mining sites worldwide (lat, lng, description, affected communities)
+        var illegalMiningSites = [
+            { lat: -3.4653, lng: -62.2159, name: "Illegal Mining in Amazon Rainforest", description: "Illegal gold mining activities in the Amazon.", affected: "Local indigenous tribes (Yanomami, Kayapo), loss of biodiversity, and exposure to mercury." },
+            { lat: 10.7592, lng: 106.6959, name: "Illegal Mining in Southeast Asia", description: "Unregulated mining of precious metals.", affected: "Communities exposed to toxic chemicals, health risks from mercury poisoning." },
+            { lat: 23.6345, lng: -102.5528, name: "Illegal Mining in Mexico", description: "Mining in protected areas without proper permits.", affected: "Workers in hazardous conditions, contamination of local water sources." },
+            { lat: -34.6037, lng: -58.3816, name: "Illegal Mining in Argentina", description: "Illegal mining impacting indigenous lands.", affected: "Displacement of indigenous communities, destruction of ecosystems, and water contamination." },
+            { lat: -4.0383, lng: 37.0135, name: "Illegal Mining in Tanzania", description: "Mining activities in Tanzania's protected areas.", affected: "Local farmers and villagers face land loss, and hazardous working conditions." },
+            { lat: -13.1636, lng: -72.5451, name: "Illegal Mining in Peru", description: "Illegal gold mining in the Peruvian Amazon.", affected: "Indigenous groups, including the Ashaninka, are affected by deforestation, displacement, and exposure to mercury." },
+            { lat: 12.2333, lng: 124.0000, name: "Illegal Mining in Philippines", description: "Unregulated mining causing deforestation and environmental damage.", affected: "Local communities displaced, river pollution, and destruction of biodiversity." },
+            { lat: -1.4578, lng: 36.5743, name: "Illegal Mining in Kenya", description: "Illegal sand mining in Kenya's rivers and coasts.", affected: "Local residents relying on river ecosystems for livelihood face loss of resources." },
+            { lat: 3.1658, lng: -60.1785, name: "Illegal Mining in Guyana", description: "Illegal gold mining in the Guyanese rainforest.", affected: "Indigenous tribes lose access to land and water, and face threats from armed groups." },
+            { lat: 15.8997, lng: 100.3160, name: "Illegal Mining in Thailand", description: "Illegal mining of tin and other minerals.", affected: "Local populations affected by air and water pollution, increased health risks." },
+            { lat: -8.1193, lng: 113.5045, name: "Illegal Mining in Indonesia", description: "Unregulated mining activities in East Java and Kalimantan.", affected: "Indigenous communities displaced, with severe air and water pollution affecting agriculture." },
+            { lat: -4.2500, lng: 138.1833, name: "Illegal Mining in Papua New Guinea", description: "Illegal gold mining impacting local communities.", affected: "Mining operations force people off their land, leading to displacement and health issues." },
+            { lat: 5.7300, lng: -0.4633, name: "Illegal Mining in Ghana", description: "Unlicensed gold mining operations harming the environment.", affected: "Local farmers, families, and workers face dangerous mining conditions and water pollution." }
+        ];
+
+        // Add markers for each illegal mining site
+        illegalMiningSites.forEach(function(site) {
+            L.marker([site.lat, site.lng]).addTo(map)
+                .bindPopup("<b>" + site.name + "</b><br>" + site.description + "<br><b>Affected Communities:</b> " + site.affected);
+        });
+
+        // Create heatmap data (example of illegal mining intensity worldwide)
+        var heatData = [
+            [-3.4653, -62.2159, 0.8],  // [lat, lng, intensity]
+            [10.7592, 106.6959, 0.7],
+            [23.6345, -102.5528, 0.9],
+            [-34.6037, -58.3816, 0.6],
+            [5.5473, 98.7873, 0.8],
+            [-4.0383, 37.0135, 0.7],
+            [-13.1636, -72.5451, 0.9],
+            [12.2333, 124.0000, 0.6],
+            [-1.4578, 36.5743, 0.5],
+            [3.1658, -60.1785, 0.8],
+            [15.8997, 100.3160, 0.7],
+            [-8.1193, 113.5045, 0.7],
+            [-4.2500, 138.1833, 0.9],
+            [5.7300, -0.4633, 0.6]
+        ];
+
+        // Add heatmap layer
+        var heat = L.heatLayer(heatData, { radius: 25 }).addTo(map);
+
+        // Function to get user's location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("location-info").innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        // Function to display user's location on the map
+        function showPosition(position) {
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            document.getElementById("location-info").innerHTML = "Your location: Latitude: " + lat + ", Longitude: " + lng;
+
+            // Add a marker at the user's location
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup("Your location");
+            map.setView([lat, lng], 6);  // Zoom to the user's location
+        }
+
+        // Function to handle errors in geolocation
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("location-info").innerHTML = "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("location-info").innerHTML = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("location-info").innerHTML = "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("location-info").innerHTML = "An unknown error occurred.";
+                    break;
+            }
+        }
+    </script>
+ <footer id="footer">
+  <div class="footer-top">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-lg-4 col-md-6">
+          <div class="footer-info">
+            <h3>Illegal Mining</h3>
+            <p>
+              Kumasi -Ashanti Region <br>
+              Ghana<br><br>
+              <strong>Phone:</strong> +233 0000000000<br>
+              <strong>Email:</strong> illegalmining@example.com<br>
+            </p>
+            <div class="social-links mt-3">
+              <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
+              <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
+              <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
+              <a href="#" class="google-plus"><i class="bx bxl-skype"></i></a>
+              <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 footer-links">
+          <h4> Links</h4>
+          <ul>
+            <li><i class="bx bx-chevron-right"></i> <a href="index.html">Home</a></li>
+
+        
+            
+          </ul>
+        </div>
+
+        <div class="col-lg-4 col-md-6 footer-links">
+         <h4>Follow Us</h4>
+            <p>"Our earth is priceless; illegal mining is not. Follow us to join the fight for a sustainable future!"</p>
+            <div class="social-links d-flex">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+
+</body>
+</html>
